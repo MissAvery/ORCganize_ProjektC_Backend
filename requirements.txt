@@ -3,4 +3,6 @@ uvicorn
 transformers
 pytorch
 ics
-pydantic 
+pydantic
+kraken
+opencv-python

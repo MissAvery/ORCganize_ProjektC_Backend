@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse
 from ner_utils import extract_tokens
 from ics_utils import create_file_content
+from page_seg_utils import segment_image
 from io import BytesIO
 from pydantic import BaseModel
 
@@ -19,6 +20,15 @@ class TextInput(BaseModel): #Text Input Files
 def root():
     return {"Hello": "World"}
 
+@app.post("/image_upload")
+async def image_upload(file: UploadFile = File(...)):
+    contents = await file.read()
+    zip_buffer = segment_image(contents)
+    zip_buffer.seek(0)
+    return StreamingResponse(zip_buffer, media_type="application/zip", headers={
+        "Content-Disposition": "attachment; filename=lines.zip"
+    })
+   
 
 @app.post("/upload")
 def upload(data: TextInput):# -> str:
@@ -36,8 +46,3 @@ def upload(data: TextInput):# -> str:
         media_type="text/plain",
         headers={"Content-Disposition": "attachment; filename=entry.txt"}
     )
-
-    # cd C:\Users\Avery\Documents\GitHub\ORCganize_ProjektC\backend\app
-    # uvicorn main:app --reload
-    # curl -X POST "http://127.0.0.1:8000/upload?sentence=16.%20April%202023%2015%20Uhr,%20Treffen%20am%20See%20f%FCrs%20Meeting"
-    # curl -X POST http://127.0.0.1:8000/upload -H "Content-Type: application/json" -d @payload.json
