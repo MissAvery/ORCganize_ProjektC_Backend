@@ -21,7 +21,7 @@ def root():
     return {"Hello": "World"}
 
 @app.post("/image_upload")
-async def image_upload(file: UploadFile = File(...)):
+async def image_upload(file: UploadFile = File(...)):       #Boolean zu Handwritten?
     contents = await file.read()
     zip_buffer = segment_image(contents)
     zip_buffer.seek(0)

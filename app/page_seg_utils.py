@@ -15,12 +15,9 @@ def segment_image(image_contents):
 
     segmentation = pageseg.segment(bin_img) #Default no_hlines=False (doesnt work anyway)
 
-    print(segmentation)
-
     # Load original (non-binarized) for cropping
     np_img = np.frombuffer(image_contents, np.uint8)
     original = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-    print("Original shape:", original.shape if original is not None else "None")
 
     zip_buffer = BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:

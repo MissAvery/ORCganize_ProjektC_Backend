@@ -2,7 +2,7 @@ fastapi
 uvicorn
 transformers
 torch
-ics
+dateparser
 pydantic
 kraken
 opencv-python
