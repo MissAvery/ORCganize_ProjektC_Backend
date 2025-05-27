@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 transformers
-pytorch
+torch
 ics
 pydantic
 kraken
