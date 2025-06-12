@@ -5,6 +5,8 @@ from ics_utils import create_file_content
 from page_seg_utils import segment_image
 from io import BytesIO
 from pydantic import BaseModel
+import numpy as np
+import cv2
 
 
 app = FastAPI(
@@ -16,18 +18,35 @@ app = FastAPI(
 class TextInput(BaseModel): #Text Input Files
     content: str  
 
+
+def mocked_OCR_function_handwritten(image: np.ndarray):
+    return "1"
+
+def mocked_OCR_function_printed(image: np.ndarray):
+    return "printed"
+
 @app.get("/")
 def root():
     return {"Hello": "World"}
 
 @app.post("/image_upload")
-async def image_upload(file: UploadFile = File(...)):       #Boolean zu Handwritten?
+async def image_upload(handwritten: bool, file: UploadFile = File(...)):    
     contents = await file.read()
-    zip_buffer = segment_image(contents)
-    zip_buffer.seek(0)
-    return StreamingResponse(zip_buffer, media_type="application/zip", headers={
-        "Content-Disposition": "attachment; filename=lines.zip"
-    })
+    extracted_text = ""
+    if(handwritten):
+        img_list = segment_image(contents)  #Segment Image
+        for image in img_list:
+            extracted_text += mocked_OCR_function_handwritten(image) + " "
+        extracted_text = str(len(img_list)) + extracted_text
+    else:
+        np_img = np.frombuffer(contents, np.uint8)
+        image = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+        extracted_text = mocked_OCR_function_printed(image)
+    
+    return extracted_text
+    #return StreamingResponse(zip_buffer, media_type="application/zip", headers={
+    #    "Content-Disposition": "attachment; filename=lines.zip"
+    #})
    
 
 @app.post("/upload")
@@ -46,3 +65,4 @@ def upload(data: TextInput):# -> str:
         media_type="text/plain",
         headers={"Content-Disposition": "attachment; filename=entry.txt"}
     )
+

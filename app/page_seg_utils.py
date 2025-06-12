@@ -19,25 +19,27 @@ def segment_image(image_contents):
     np_img = np.frombuffer(image_contents, np.uint8)
     original = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
 
-    zip_buffer = BytesIO()
-    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-        for i, line in enumerate(segmentation.lines):
-            x0, y0, x1, y1 = map(int, line.bbox)
+    #zip_buffer = BytesIO()
+    #with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+    img_list = []
+    for i, line in enumerate(segmentation.lines):
+        x0, y0, x1, y1 = map(int, line.bbox)
 
-            # Ensure coordinates are within image bounds
-            x0 = max(x0 - 10, 0)
-            y0 = max(y0 - 10, 0)
-            x1 = min(x1 + 10, original.shape[1])
-            y1 = min(y1 + 10, original.shape[0])
+        # Ensure coordinates are within image bounds
+        x0 = max(x0 - 10, 0)
+        y0 = max(y0 - 10, 0)
+        x1 = min(x1 + 10, original.shape[1])
+        y1 = min(y1 + 10, original.shape[0])
 
-            # Crop line image
-            cropped = original[y0:y1, x0:x1]
+        # Crop line image
+        cropped = original[y0:y1, x0:x1]
 
+        img_list.append(cropped)
             # Save line image
-            is_success, buffer = cv2.imencode(".png", cropped)
-            if is_success:
-                zip_file.writestr(f"line_{i+1:03d}.png", buffer.tobytes())
+            #is_success, buffer = cv2.imencode(".png", cropped)  #Image to Streaming Data
+            #if is_success:
+            #    zip_file.writestr(f"line_{i+1:03d}.png", buffer.tobytes())
 
-    zip_buffer.seek(0)
-    return zip_buffer
+    #zip_buffer.seek(0)
+    return img_list
 
