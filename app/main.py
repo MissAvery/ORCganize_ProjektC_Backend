@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from ner_utils import extract_tokens
 from ics_utils import create_file_content
 from page_seg_utils import segment_image
+from HTR_utils import recognize_text_from_image
 from io import BytesIO
 from pydantic import BaseModel
 import numpy as np
@@ -20,7 +21,7 @@ class TextInput(BaseModel): #Text Input Files
 
 
 def mocked_OCR_function_handwritten(image: np.ndarray):
-    return "1"
+    return "handwritten"
 
 def mocked_OCR_function_printed(image: np.ndarray):
     return "printed"
@@ -33,20 +34,32 @@ def root():
 async def image_upload(handwritten: bool, file: UploadFile = File(...)):    
     contents = await file.read()
     extracted_text = ""
+
+    #Handwritten Segmentation & OCR
     if(handwritten):
         img_list = segment_image(contents)  #Segment Image
         for image in img_list:
-            extracted_text += mocked_OCR_function_handwritten(image) + " "
-        extracted_text = str(len(img_list)) + extracted_text
+            extracted_text += recognize_text_from_image(image) + " "
+
+    #Printed OCR
     else:
         np_img = np.frombuffer(contents, np.uint8)
         image = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
         extracted_text = mocked_OCR_function_printed(image)
     
-    return extracted_text
-    #return StreamingResponse(zip_buffer, media_type="application/zip", headers={
-    #    "Content-Disposition": "attachment; filename=lines.zip"
-    #})
+    #NER & Output File Creation
+    name_tokens, date_tokens, time_tokens, location_tokens, duration_tokens, link_tokens = extract_tokens(extracted_text)
+    content = create_file_content(name_tokens, date_tokens, time_tokens, location_tokens, duration_tokens, link_tokens)
+
+    file_like = BytesIO()
+    file_like.write(content.encode("utf-8"))
+    file_like.seek(0)  # Cursor zurück zum Anfang setzen
+
+    return StreamingResponse(
+        file_like,
+        media_type="text/plain",
+        headers={"Content-Disposition": "attachment; filename=entry.txt"}
+    )
    
 
 @app.post("/upload")

@@ -1,11 +1,9 @@
-import kraken
 from kraken import binarization, pageseg
 from PIL import Image
 import cv2
 import numpy as np
 from io import BytesIO
 
-import zipfile
 
 # Kraken only works on Linux -------------------------------------------------------------------------------------------
 
@@ -19,10 +17,9 @@ def segment_image(image_contents):
     np_img = np.frombuffer(image_contents, np.uint8)
     original = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
 
-    #zip_buffer = BytesIO()
-    #with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+    
     img_list = []
-    for i, line in enumerate(segmentation.lines):
+    for line in segmentation.lines:
         x0, y0, x1, y1 = map(int, line.bbox)
 
         # Ensure coordinates are within image bounds
@@ -33,13 +30,7 @@ def segment_image(image_contents):
 
         # Crop line image
         cropped = original[y0:y1, x0:x1]
-
         img_list.append(cropped)
-            # Save line image
-            #is_success, buffer = cv2.imencode(".png", cropped)  #Image to Streaming Data
-            #if is_success:
-            #    zip_file.writestr(f"line_{i+1:03d}.png", buffer.tobytes())
-
-    #zip_buffer.seek(0)
+           
     return img_list
 
