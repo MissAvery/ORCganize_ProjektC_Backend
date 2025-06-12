@@ -6,3 +6,4 @@ dateparser
 pydantic
 kraken
 opencv-python
+Pillow
