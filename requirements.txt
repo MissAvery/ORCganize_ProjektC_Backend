@@ -7,3 +7,4 @@ pydantic
 kraken
 opencv-python
 Pillow
+easyocr
