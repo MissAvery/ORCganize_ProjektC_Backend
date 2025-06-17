@@ -3,7 +3,8 @@ from fastapi.responses import StreamingResponse
 from ner_utils import extract_tokens
 from ics_utils import create_file_content
 from page_seg_utils import segment_image
-from HTR_utils import recognize_text_from_image
+from HTR_utils import recognize_text_from_image as recognize_text_from_image_handwritten
+from OCR_utils import recognize_text_from_image as recognize_text_from_image_printed
 from io import BytesIO
 from pydantic import BaseModel
 import numpy as np
@@ -39,17 +40,22 @@ async def image_upload(handwritten: bool, file: UploadFile = File(...)):
     if(handwritten):
         img_list = segment_image(contents)  #Segment Image
         for image in img_list:
-            extracted_text += recognize_text_from_image(image) + " "
+            extracted_text += recognize_text_from_image_handwritten(image) + " "
 
     #Printed OCR
     else:
         np_img = np.frombuffer(contents, np.uint8)
         image = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-        extracted_text = mocked_OCR_function_printed(image)
+        extracted_text = recognize_text_from_image_printed(image)
     
     #NER & Output File Creation
     name_tokens, date_tokens, time_tokens, location_tokens, duration_tokens, link_tokens = extract_tokens(extracted_text)
     content = create_file_content(name_tokens, date_tokens, time_tokens, location_tokens, duration_tokens, link_tokens)
+
+    #For Testing purpose-----
+    content += '\n'
+    content += extracted_text
+    #------------------------
 
     file_like = BytesIO()
     file_like.write(content.encode("utf-8"))
