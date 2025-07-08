@@ -2,7 +2,7 @@ from transformers import pipeline
 from transformers import AutoTokenizer
 from transformers import AutoModelForTokenClassification
 
-tokenizer = AutoTokenizer.from_pretrained("MissAvery/distilbert-german-finetuned-ner-v1")
+tokenizer = AutoTokenizer.from_pretrained("MissAvery/distilbert-german-finetuned-ner-v2")
 model = AutoModelForTokenClassification.from_pretrained("MissAvery/distilbert-german-finetuned-ner-v2")
 token_classifier = pipeline("token-classification", model=model, tokenizer=tokenizer, aggregation_strategy="none")
 
