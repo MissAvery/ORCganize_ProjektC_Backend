@@ -69,7 +69,7 @@ def simple_aggregate_strategy(tokens, labels, offsets):
   current_entity = None
 
   for i, (token, label, (start, end)) in enumerate(zip(tokens, labels, offsets)):
-    if label == "O":
+    if label == "0":
       if current_entity:
         entities.append(current_entity)
         current_entity = None
