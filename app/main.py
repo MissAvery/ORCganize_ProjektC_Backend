@@ -52,11 +52,6 @@ async def image_upload(handwritten: bool, file: UploadFile = File(...)):
     name_tokens, date_tokens, time_tokens, location_tokens, duration_tokens, link_tokens = extract_tokens(extracted_text)
     content = create_file_content(name_tokens, date_tokens, time_tokens, location_tokens, duration_tokens, link_tokens)
 
-    #For Testing purpose-----
-    content += '\n'
-    content += extracted_text
-    #------------------------
-
     file_like = BytesIO()
     file_like.write(content.encode("utf-8"))
     file_like.seek(0)  # Cursor zurück zum Anfang setzen

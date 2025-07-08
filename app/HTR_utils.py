@@ -12,9 +12,6 @@ model.eval()
 def recognize_text_from_image(image: np.ndarray) -> str:
     # Konvertiere np.ndarray in PIL-Bild (RGB-Modus erwartet)
 
-    #Runtime Test
-    print("Starting Extraction")
-
     pil_image = Image.fromarray(image).convert("RGB")
     pixel_values = processor(images=pil_image, return_tensors="pt").pixel_values
 
@@ -23,7 +20,5 @@ def recognize_text_from_image(image: np.ndarray) -> str:
 
     text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
-    #Runtime Test
-    print("Finished Extraction")
     return text
 
