@@ -1,10 +1,13 @@
+import os
+
 from transformers import pipeline
 from transformers import AutoTokenizer
 from transformers import AutoModelForTokenClassification
 
-tokenizer = AutoTokenizer.from_pretrained("MissAvery/distilbert-german-finetuned-ner-v2")
+HF_TOKEN = os.getenv("HF_TOKEN")
+tokenizer = AutoTokenizer.from_pretrained("MissAvery/distilbert-german-finetuned-ner-v2", token=HF_TOKEN)
 model = AutoModelForTokenClassification.from_pretrained("MissAvery/distilbert-german-finetuned-ner-v2")
-token_classifier = pipeline("token-classification", model=model, tokenizer=tokenizer, aggregation_strategy="none")
+token_classifier = pipeline("token-classification", model=model, tokenizer=tokenizer, aggregation_strategy="none", token=HF_TOKEN)
 
 
 def extract_tokens(sentence: str):

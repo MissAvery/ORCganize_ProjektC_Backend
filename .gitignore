@@ -1,0 +1,17 @@
+/.venv/
+/.venv39_kraken/
+/.venv310/
+/.idea
+
+# Python __pycache__ Ordner
+__pycache__/
+
+# Flutter generierte Dateien
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+.idea/misc.xml
+.idea/ORCganize_ProjektC_Backend.iml
+.idea/misc.xml

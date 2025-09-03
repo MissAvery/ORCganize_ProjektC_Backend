@@ -1,7 +1,8 @@
 fastapi
+numpy==1.24.4
 uvicorn
 transformers
-torch
+transformers==4.28.1
 dateparser
 pydantic
 kraken
