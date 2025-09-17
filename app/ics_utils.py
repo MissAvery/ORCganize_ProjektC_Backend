@@ -139,6 +139,19 @@ def check_for_full_day(time):
     return 'Ganztägig'
   return time
 
+### Duration Normalizer ------------------------------------------------
+
+def normalize_duration_expressions(text):
+  text = re.sub(r'\s?Stunden$',r'', text, flags=re.IGNORECASE)
+  text = re.sub(r'\s?Stunde$',r'', text, flags=re.IGNORECASE)
+  text = re.sub(r'\s?h$',r'', text, flags=re.IGNORECASE)
+  
+  text = re.sub(r'\s?Minuten$',r'', text, flags=re.IGNORECASE)
+  text = re.sub(r'\s?min$',r'', text, flags=re.IGNORECASE)
+  text = re.sub(r'\s?m$',r'', text, flags=re.IGNORECASE)
+
+  return text
+
 ### Prepare ics data ------------------------------------------------
 
 def prepare_name(name_tokens):
@@ -147,6 +160,8 @@ def prepare_name(name_tokens):
     name += token + '|'
   if not name == '':
     name = name[:-1]
+  else:
+    name = 'Termin'
   return name
 
 def prepare_description(link_tokens):
@@ -242,10 +257,11 @@ def prepare_time(time_tokens):
   return times
 
 
-def prepare_duration(duration_tokens):      #Unvollständig <-----------
+def prepare_duration(duration_tokens):      
   if(duration_tokens == []):
     return 1
-  return duration_tokens[0]
+  duration = normalize_duration_expressions(duration_tokens[0])
+  return duration
 
 
 ### Create Entry File ------------------------------------------------
